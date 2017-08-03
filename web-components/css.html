@@ -1,0 +1,41 @@
+x-foo.html
+<template>
+    <div>
+        <p>
+            <x-bar>
+                <div onclick={handleClick}>
+</template>
+<style>
+[host] { border-color: red; }
+div { border-color: blue; }
+</style>
+
+
+x-bar.html
+<template>
+    <div>
+        <slot></slot>
+    </div>
+</template>
+<style>
+[host] { border-color: yellow; }
+div { border-color: gray; }
+</style>
+<link href="myown.css">
+
+
+// output
+<x-foo x="maintpl">
+    <div x="footpl">
+        <p x="footpl">
+            <x-bar x="footpl">
+                <div x="bartpl">
+                    <slot x="bartpl">
+                        <div onclick={handleClick} x="footpl">
+
+<style>
+x-foo, [is="x-foo"] { border-color: red; }
+div[x="footpl"] { color: blue; }
+x-bar, [is="x-bar"]{ border-color: yellow; }
+div[x="bartpl"] { color: blue; }
+</style>

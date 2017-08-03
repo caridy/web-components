@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <h1>Transferable Focus</h1>
+    <p>
+        This example allow us to create a custom element that is focusable for consumers, but it really
+        just transfer the focus into an internal input element.
+    </p>
+
+
+    <a href="#">some arbitrary focusable element</a>
+    <x-foo tabindex="-1" accesskey="z" id="outer">
+        some input:
+        <input id="inner" tabindex="0" accesskey="z" />
+        some description for the input
+    </x-foo>
+    <button id="trigger">click here to focus on x-foo</button>
+
+    <script>
+        var ignore = false;
+        var publicElement = document.getElementById('outer');
+        var privateElement = document.getElementById('inner');
+        publicElement.addEventListener('focus', function (e) {
+            console.log(1, e);
+            if (ignore) {
+                ignore = false;
+                return;
+            }
+            e.stopImmediatePropagation();
+            if (e.relatedTarget === privateElement) {
+                originalBlur.call(publicElement);
+            } else {
+                privateElement.focus();
+            }
+        });
+        publicElement.addEventListener('blur', function (e) {
+            console.log(2);
+            if (ignore) {
+                ignore = false;
+                return;
+            }
+            e.stopImmediatePropagation();
+        });
+        publicElement.focus = function () {
+            console.log(3);
+            privateElement.focus();
+        }
+        var originalBlur = publicElement.blur;
+        publicElement.blur = function () {
+            console.log(4);
+            privateElement.blur();
+        }
+        privateElement.addEventListener('blur', function () {
+            console.log(5);
+            ignore = true;
+            publicElement.dispatchEvent(new CustomEvent('blur'));
+        });
+        privateElement.addEventListener('focus', function () {
+            console.log(6);
+            ignore = true;
+            publicElement.dispatchEvent(new CustomEvent('focus'));
+        });
+
+        // consumer code
+        publicElement.addEventListener('focus', function (e) {
+            console.log('focus x-foo');
+        });
+        publicElement.addEventListener('blur', function (e) {
+            console.log('blur x-foo');
+        });
+        document.getElementById('trigger').addEventListener('click', function () {
+            console.log('transfering focus to x-foo');
+            publicElement.focus();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Reflection of attributes and properties in Web Component</title>
+</head>
+<body>
+    <script>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'closed'});
+            shadowRoot.innerHTML = `<p>content</p>`;
+            this.addEventListener('click', (event) => {
+                console.log(event);
+                const el = this.xx.querySelector('p');
+                el.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
+            });
+            shadowRoot.addEventListener('foo', (event) => {
+                console.log(1, event);
+            });
+            this.addEventListener('foo', (event) => {
+                console.log(2, event);
+            });
+            this.xx = shadowRoot;
+        }
+        connectedCallback() {
+            console.log(this.querySelector('p'));
+        }
+    }
+    customElements.define('x-foo', XFoo);
+    </script>
+    <x-foo>
+        <p class="external">something</p>
+    </x-foo>
+</body>
+</html>

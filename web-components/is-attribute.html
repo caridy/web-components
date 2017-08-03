@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Example of usage of the "is" attribute</title>
+</head>
+<body>
+    <div is="x-foo" id="fooelm">foo</div>
+    <div is="x-bar">bar</div>
+	<script type='text/javascript'>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+            console.log('foo created');
+        }
+        static get observedAttributes() {
+            return ['title'];
+        }
+        connectedCallback() {
+            console.log('inserted Foo');
+            this.addEventListener('click', (e) => console.log('foo', e));
+            this.innerHTML = 'fooooo';
+        }
+    }
+    class XBar extends HTMLElement {
+        constructor() {
+            super();
+            console.log('bar created');
+        }
+        connectedCallback() {
+            console.log('inserted Bar');
+            this.addEventListener('click', (e) => console.log('bar', e));
+            this.innerHTML = 'barrrr';
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-foo', XFoo);
+    customElements.define('x-bar', XBar);
+    setTimeout(() => {
+        document.getElementById('fooelm').setAttribute('is', 'x-bar');
+    }, 1000);
+    const customFoo = document.createElement('x-foo');
+    customFoo.attributeChangedCallback = function (name, oldValue, newValue) {
+        debugger;
+    }
+    customFoo.setAttribute('title', 'lll')
+    document.body.appendChild(customFoo);
+
+    const customBar = document.createElement('x-bar');
+    document.body.appendChild(customBar);
+    </script>
+</body>
+</html>

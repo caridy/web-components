@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Observability of removal-insertion via life-cycle hooks</title>
+</head>
+<body>
+    <script>
+    class XCheckbox extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = `<h1>lllll llll</h1><div><slot><p>foo</p></slot></div>`;
+            shadowRoot.querySelector('h1').addEventListener('click', function (e) {
+                console.log(1, e);
+            });
+            this.querySelector('p')
+            shadowRoot.querySelector('slot').addEventListener('click', function (e) {
+                console.log(2, e);
+            });
+        }
+        connectedCallback() {
+            this.addEventListener('click', this._onclick);
+        }
+        disconnectedCallback() {
+            this.removeEventListener('click', this._onclick);
+        }
+        _onclick(e) {
+            this.checked = !this.checked;
+            this.dispatchEvent(new CustomEvent('checkchanged', {
+                detail: { checked: this.checked }, bubbles: false
+            }));
+        }
+        set oncheckchanged(fn) {
+            this.removeEventListener('checkchanged', this._oncheckchanged);
+            this._oncheckchanged = fn;
+            this.addEventListener('checkchanged', this._oncheckchanged);
+        }
+        get oncheckchanged() {
+            return this._oncheckchanged;
+        }
+        set checked(value) {
+            this._checked = value;
+            value ? this.setAttribute('checked', '') : this.removeAttribute('checked');
+        }
+        get checked() {
+            return this._checked;
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            debugger;
+        }
+        baz() {
+            debugger;
+        }
+    }
+    customElements.define('x-checkbox', XCheckbox);
+/*
+    const props = {
+        checked: true,
+        oncheckchanged: function(e) {
+            console.log('oncheckchanged called with', e);
+        }
+    };
+    const customCheckbox = document.createElement('x-checkbox');
+    Object.assign(customCheckbox, props);
+    document.body.appendChild(customCheckbox);
+
+    customCheckbox.baz();
+    customCheckbox.setAttribute('bar', 2);*/
+
+    </script>
+    <x-checkbox bar="4" id="ff">
+        <p>
+
+        </p>
+    </x-checkbox>
+
+    <script>
+        document.getElementById('ff').querySelector('p');
+    </script>
+</body>
+</html>

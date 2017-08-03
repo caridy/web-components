@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Reflection of attributes and properties in Web Component</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    // Create a class for the element
+    class XProduct extends HTMLElement {
+        static get observedAttributes() {
+            return ['x'];
+        }
+        // x = 1;
+        constructor() {
+            // Always call super first in ctor
+            super();
+            this.state = {};
+            this.x = 1;
+        }
+        get x() {
+            console.log('get');
+            return this.state.x;
+        }
+        set x(newValue) {
+            const oldValue = this.state.x;
+            if (oldValue !== newValue) {
+                console.log('set');
+                this.state.x = newValue;
+                this.setAttribute('x', newValue);
+            }
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (name === "x") {
+                console.log('attr change', oldValue, newValue);
+                newValue = parseInt(newValue, 10);
+                if (newValue !== this.state.x) {
+                    this.state.x = newValue;
+                }
+            }
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-product', XProduct);
+
+    const customFoo = document.createElement('x-product');
+    document.body.appendChild(customFoo);
+    // customFoo.x = 1;
+    // customFoo.setAttribute('x', 2);
+    </script>
+</body>
+</html>

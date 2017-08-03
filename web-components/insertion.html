@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Example of Mutation Observer on custom elements</title>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+    // select the target node
+    var target = document.getElementById('container');
+
+    // create an observer instance
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            console.log(mutation);
+        });
+    });
+
+    // configuration of the observer:
+    var config = {
+        subtree: true,
+        childList: true,
+    };
+
+    // pass in the target node, as well as the observer options
+    observer.observe(document.body, config);
+
+    var elm = document.createElement('x-foo');
+    elm.setAttribute('x', 1);
+    target.appendChild(elm);
+
+    var elm2 = document.createElement('div');
+    target.appendChild(elm2);
+
+    elm.setAttribute('x', 2);
+
+    // later, you can stop observing
+    // observer.disconnect();
+    </script>
+</body>
+</html>

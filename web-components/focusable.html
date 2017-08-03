@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Playing with focusable custom elements</title>
+</head>
+<body>
+    <h1>this is a very hacky thing</h1>
+    <input value="before" tabindex="-1" />
+	<script type='text/javascript'>
+
+
+
+    // class Foo extends Element {
+    //     state = {
+    //         internalTabIndex: 0
+    //     }
+    //     connectedCallback() {
+    //         makeThisAFocusableElement(this);
+    //     }
+    //     attributeChangedCallback(name, oldValue, newValue) {
+    //         this.state.internalTabIndex = computeFocusableElementTabIndex(newValue);
+    //     }
+    // }
+
+    // <template>
+    //     <input tabindex={state.internalTabIndex}>
+    // </template>
+
+
+
+    var fakeFocusableAnchor = document.createElement('button');
+    fakeFocusableAnchor.tabIndex = 0;
+    fakeFocusableAnchor.setAttribute('aria-hidden', 'true');
+    // fakeFocusableAnchor.addEventListener('focus', function (e) {
+    //     console.log('the first one cannot really get the focus');
+    //     fakeFocusableAnchor.blur();
+    // });
+
+    // Create a class for the element
+    class XProduct extends HTMLElement {
+        static get observedAttributes() {
+            return ['tabindex'];
+        }
+        constructor() {
+            // Always call super first in ctor
+            super();
+            console.log('constructor()', this);
+            var shadow = this.attachShadow({mode: 'open', delegatesFocus: true});
+
+            // Create a standard input element and set it's attributes.
+            var input = document.createElement('input');
+            var slot = document.createElement('slot');
+
+            // Add the input to the shadow root.
+            shadow.appendChild(input);
+            shadow.appendChild(slot);
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            console.log('attribute changed callback', this, name, oldValue, newValue);
+            if (name === 'tabindex' && newValue === '-1') {
+                // injected only when tabindex is -1
+                this.tabIndex = 999;
+                this.addEventListener('focus', (e) => {
+                    console.log(e, e.relatedTarget, this.contains(e.relatedTarget));
+                    if (!(e.relatedTarget && this.contains(e.relatedTarget))) {
+                        console.log('nothing after 999 gets the focus ever');
+                        document.body.insertBefore(fakeFocusableAnchor, document.body.firstChild);
+                        fakeFocusableAnchor.focus();
+                        document.body.removeChild(fakeFocusableAnchor);
+                    }
+                });
+            }
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-product', XProduct);
+
+    // const customFoo = document.createElement('x-product');
+    // document.body.appendChild(customFoo);
+    </script>
+    <x-product tabindex="-1">
+        <button>slotted button</button>
+    </x-product>
+
+    <input value="after"/>
+</body>
+</html>

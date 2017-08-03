@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Attributes vs Properties</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    // Create a class for the element
+    class XProduct extends HTMLElement {
+        static get observedAttributes() {
+            return ['data-name', 'my-label'];
+        }
+        constructor() {
+            // Always call super first in ctor
+            super();
+            this.dispatchEvent(new CustomEvent('foo'));
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            debugger;
+            if (name === "title") {
+                this.getElementById('foo').x = newValue;
+            }
+        }
+        adoptedCallback() {
+            console.log(4444, arguments);
+            debugger;
+        }
+        connectedCallback() {
+            console.log(333, arguments);
+            this.setAttribute('class', 'connected');
+            debugger;
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-product', XProduct);
+
+    const customFoo = document.createElement('x-product');
+    customFoo.dataset.x = 1;
+    customFoo.setAttribute('data-y', 2);
+    customFoo.className = 'foo';
+    document.body.appendChild(customFoo);
+    </script>
+</body>
+</html>

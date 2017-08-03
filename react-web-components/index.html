@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.js"></script>
+    <script src="react-todo-app-component.js"></script>
+    <script src="react-wc-factory.js"></script>
+    <script>
+        // defining <react-todo> as a custom element
+        const WebComponentDefinition = ReactWCFactory(TodoApp);
+        customElements.define('react-todo', WebComponentDefinition);
+    </script>
+</head>
+<body>
+    <div id="container-for-react-wc-imperative"></div>
+    <div id="container-for-react-wc-declarative"></div>
+    <div id="container-for-original-react"></div>
+    <div id="container-for-react-using-compiled-wc"></div>
+    <script>
+        // web component imperative initialization
+        const mountNode2 = document.getElementById('container-for-react-wc-imperative');
+        const el = document.createElement('react-todo');
+        el.label = 'web component imperative initialization';
+        mountNode2.appendChild(el);
+    </script>
+    <script>
+        // web component declarative initialization
+        const mountNode3 = document.getElementById('container-for-react-wc-declarative');
+        mountNode3.innerHTML = '<react-todo label="web component declarative initialization"></react-todo>';
+    </script>
+    <script>
+        // react component initialization
+        const mountNode1 = document.getElementById('container-for-original-react');
+        ReactDOM.render(React.createElement(TodoApp, {
+            label: 'react component initialization'
+        }), mountNode1);
+    </script>
+    <script>
+        // react component initialization
+        class Foo extends React.Component {
+            render() {
+                return React.createElement('react-todo', this.props);
+            }
+        }
+        const mountNode4 = document.getElementById('container-for-react-using-compiled-wc');
+        ReactDOM.render(React.createElement(Foo, {
+            label: 'react component creating web component compiled from react',
+        }), mountNode4);
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>events retargeting in web component</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script>
+    class Foo extends HTMLElement {
+        constructor() {
+            super();
+            // var shadow = this.attachShadow({mode: 'open'});
+            // // Create a standard img element and set it's attributes.
+            // var a = document.createElement('a');
+            // a.innerHTML = 'click here';
+            // // Add the image to the shadow root.
+            // shadow.appendChild(a);
+        }
+        connectedCallback() {
+            this.addEventListener('click', (event) => {
+                console.log('clicked from inside', event);
+                this.dispatchEvent(new CustomEvent('foo', {bubbles: true, cancelable: true}));
+            });
+            this.addEventListener('click', function() {
+                console.log('clicked context', this);
+            });
+            this.addEventListener('foo', function (event) {
+                console.log('fooed from inside', event);
+            });
+        }
+        disconnectedCallback() {
+        }
+    }
+
+    // registration in browser
+    customElements.define('x-foo', Foo);
+    </script>
+</head>
+<body>
+    <x-foo id="elm"><a>click here default</a></x-foo>
+    <script>
+        const elm = document.getElementById('elm');
+        elm.addEventListener('click', function (event) {
+            console.log('clicked from outside', event);
+            event.preventDefault();
+        });
+        elm.addEventListener('foo', function (event) {
+            console.log('fooed from outside', event);
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

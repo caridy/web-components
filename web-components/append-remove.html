@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Observability of removal-insertion via life-cycle hooks</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XProduct extends HTMLElement {
+        constructor() {
+            super();
+            console.log('constructed', this, this.parentElement, this.childNodes[0]);
+        }
+        connectedCallback() {
+            console.log(this.parentElement.tagName);
+            console.log('connected', this, this.parentElement, this.childNodes[0]);
+        }
+        disconnectedCallback() {
+            console.log('disconnected', this, this.parentElement, this.childNodes[0]);
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-product', XProduct);
+
+    const customFoo = document.createElement('x-product');
+    customFoo.appendChild(document.createElement('input'));
+    console.log('inserting');
+    document.body.appendChild(customFoo);
+    console.log('removing');
+    document.body.removeChild(customFoo);
+    var div = document.createElement('div');
+    document.body.appendChild(div);
+    console.log('moving');
+    div.appendChild(customFoo);
+
+    </script>
+</body>
+</html>
