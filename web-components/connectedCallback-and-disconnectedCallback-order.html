@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Example of LifeCycle for connectedCallback and disconnectedCallback</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XChild extends HTMLElement {
+        connectedCallback() {
+            console.log('child connected');
+        }
+        disconnectedCallback() {
+            console.log('child disconnected');
+        }
+    }
+    class XParent extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'closed'});
+            shadowRoot.innerHTML = `<x-child>content</x-child>`;
+            this.root = shadowRoot;
+        }
+        connectedCallback() {
+            console.log('parent connected', this.root.firstChild);
+        }
+        disconnectedCallback() {
+            console.log('parent disconnected', this.root.firstChild);
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-parent', XParent);
+    customElements.define('x-child', XChild);
+    
+    const customFoo = document.createElement('x-parent');
+    console.log('element created');
+    document.body.appendChild(customFoo);
+    document.body.removeChild(customFoo);
+    console.log('element destroyed');
+    </script>
+</body>
+</html>
