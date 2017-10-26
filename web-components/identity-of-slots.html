@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Identity of slots in Web Component</title>
+</head>
+<body>
+    <script>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({ mode: 'closed' });
+            shadowRoot.innerHTML = `
+            <slot>
+                <h1>default slot for default slot</h1>
+            </slot>
+            <slot name="x">
+                <h2>the x slot default text</h2>
+            </slot>`;
+            this.root = shadowRoot;
+        }
+        run() {
+            console.log('internal h1 which is the default content of the default slot: ', this.root.querySelector('h1'));
+            console.log('intenral h2 which is the default content of the slot x', this.root.querySelector('h2'));
+        }
+    }
+    customElements.define('x-foo', XFoo);
+    </script>
+    <x-foo>
+        <h3>custom text for default slot</h3>
+        <h4 sleot="x">
+            <p>custom text for slot x</p>
+        </h4>
+    </x-foo>
+    <script>
+    document.querySelector('x-foo').run();
+    </script>
+    <p>
+        How to identify elements passed via slots:
+    </p>
+    <ul>
+        <li>
+            the `slot` attribute is preserved in elements that are slotted. you can use it to identify them.
+        </li>
+        <li>
+            `closed` or `open` mode has no implications for the slotting algo.
+        </li>
+        <li>
+            children of slotted elements have no information about the slot they belong to. you can walk up the dom chain to determine the closest element with `slot` attribute instead.
+        </li>
+        <li>
+            weird behavior: fallback content for each slot is present via shadowRoot, they are reachable, but will not appear in the UI to users, instead the provided content will surface.
+        </li>
+        <li>
+            weird behavior: if no content for the default slot is provided (in the example above the h3), but some other slot is provided, the default content for the default slot will not surface. but if h4 is removed, everything works fine. default slot seems to be especial.
+        </li>
+    </ul>
+</body>
+</html>

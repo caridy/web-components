@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Example of event retargeting</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XChild extends HTMLElement {
+        connectedCallback() {
+            this.dispatchEvent(new CustomEvent('abc', {
+                bubbles: true,
+                composed: true,
+            }));
+            this.dispatchEvent(new CustomEvent('xyz', {
+                bubbles: true,
+            }));
+        }
+    }
+    class XParent extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = `<x-child></x-child>`;
+            this.root = shadowRoot;
+            this.addEventListener('abc', function (event) {
+                console.log('event `abc` crossed the boundary correctly.', event);
+            });
+            this.addEventListener('xyz', function (event) {
+                console.log('event `xyz` crossed the boundary incorrectly.', event);
+            });
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-parent', XParent);
+    customElements.define('x-child', XChild);
+    
+    const customFoo = document.createElement('x-parent');
+    console.log('element created');
+    document.body.appendChild(customFoo);
+    </script>
+    <p>look at the console where you should see one message for event `abc`</p>
+    <ul>
+        <li>
+            retargeting is based on event.composed value.
+        </li>
+        <li>
+            whether the shadow dom is open or not has no implications on the retargeting.
+        </li>
+        <li>
+            currentTarget is set to null.
+        </li>
+        <li>
+            target and sourceElement are set to the custom element receiving the event.
+        </li>
+    </ul>
+</body>
+</html>

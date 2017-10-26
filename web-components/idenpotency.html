@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Idenponcy of the registry</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+        }
+    }
+
+    customElements.define('x-foo', XFoo);
+    customElements.define('x-bar', XFoo);
+    
+    const foo = document.createElement('x-foo');
+    document.body.appendChild(foo);
+
+    const bar = document.createElement('x-bar');
+    document.body.appendChild(bar);
+    </script>
+    <p>the registry does not allow you to redefine the same tag name nor to link a constructor with a second tag name</p>
+</body>
+</html>

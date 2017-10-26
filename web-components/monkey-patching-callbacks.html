@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Test to validate that the LifeCycle callbacks can't be monkey-patched at the instance level</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+        }
+        connectedCallback() {
+            console.log('original connected');
+        }
+        disconnectedCallback() {
+            console.log('original disconnected');
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-foo', XFoo);
+    
+    const customFoo = document.createElement('x-foo');
+    customFoo.connectedCallback = function () {
+        console.log('patched connected');
+    }
+    customFoo.disconnectedCallback = function () {
+        console.log('patched disconnected');
+    }
+    document.body.appendChild(customFoo);
+    document.body.removeChild(customFoo);
+    </script>
+    <p>You should see two messages in the console stating that the original hooks were used.</p>
+    <ul>
+        <li>patching at instance level is not possible by spec</li>
+        <li>hooks are collected during registration, and are stored in internal slots</li>
+    </ul>
+</body>
+</html>
