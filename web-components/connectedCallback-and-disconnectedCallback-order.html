@@ -8,10 +8,10 @@
 	<script type='text/javascript'>
     class XChild extends HTMLElement {
         connectedCallback() {
-            console.log('child connected');
+            console.log('child connected', document.body.querySelector('x-parent'));
         }
         disconnectedCallback() {
-            console.log('child disconnected');
+            console.log('child disconnected', document.body.querySelector('x-parent'));
         }
     }
     class XParent extends HTMLElement {
@@ -23,10 +23,10 @@
             this.root = shadowRoot;
         }
         connectedCallback() {
-            console.log('parent connected', this.root.firstChild);
+            console.log('parent connected', this.root.firstChild, this.parentElement, document.body.querySelector('x-parent'));
         }
         disconnectedCallback() {
-            console.log('parent disconnected', this.root.firstChild);
+            console.log('parent disconnected', this.root.firstChild, this.parentElement, document.body.querySelector('x-parent'));
         }
     }
 
@@ -37,7 +37,14 @@
     const customFoo = document.createElement('x-parent');
     console.log('element created');
     document.body.appendChild(customFoo);
-    document.body.removeChild(customFoo);
+
+
+    const div = document.createElement('div');
+    document.body.appendChild(div);
+    div.appendChild(customFoo);
+
+
+    document.body.removeChild(div);
     console.log('element destroyed');
     </script>
 </body>
