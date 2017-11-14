@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Things that cannot be done in constructor</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    // Create a class for the element
+    class XProduct extends HTMLElement {
+        constructor() {
+            super();
+            this.classList.add('foo');
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-product', XProduct);
+
+    const customFoo = document.createElement('x-product');
+    document.body.appendChild(customFoo);
+    </script>
+    <h1>Classnames</h1>
+    <p>New elements cannot have classnames added during construction. Check the console for more details.</p>
+</body>
+</html>
