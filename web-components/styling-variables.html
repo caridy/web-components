@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Things that cannot be done in constructor</title>
+    <style>
+        /* Component users can then override this color as*/
+        business-card {
+            --card-title-color: magenta; 
+        }
+    </style>
+</head>
+<body>
+	<script type='text/javascript'>
+    // Create a class for the element
+    class BusinessCard extends HTMLElement {
+        constructor() {
+            super();
+            var shadow = this.attachShadow({ mode: 'open' });
+            shadow.innerHTML = `
+            <style>
+                .card-title {
+                    color: var(--card-title-color, #000);
+                }
+            </style>
+            <h1 class="card-title">Internal title that can be styled via <code>--card-title-color</code> variable</h1>
+            `;
+        }
+    }
+
+    // Define the new element
+    customElements.define('business-card', BusinessCard);
+    </script>
+    <h1>Styling</h1>
+    <p>The following element should have a color set to magenta set via css variable defined at the global level:</p>
+    <business-card></business-card>
+    <p>Note: as you can see, <code>--card-title-color</code> becomes effectible part of the public API of <code>&lt;business-card&gt;</code> element</p>
+</body>
+</html>
+
+
