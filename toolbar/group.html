@@ -1,0 +1,36 @@
+<template>
+    <style>
+        :host > div {
+            display: inline-flex;
+            border: 1px solid blue;
+            border-radius: 3px;
+        }
+        ::slotted(*) {
+            border-color: blue;
+            border-radius: 0;
+            margin: 0;
+        }
+        ::slotted(:first-child) {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        ::slotted(:last-child) {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+    </style>
+    <div>
+        <slot></slot>
+    </div>
+</template>
+<script type='text/javascript'>
+var template = document.currentScript.ownerDocument.querySelector('template');
+class FancyGroup extends HTMLElement {
+    constructor() {
+        super();
+        var shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = template.innerHTML;
+    }
+}
+customElements.define('x-group', FancyGroup);
+</script>

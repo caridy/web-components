@@ -1,0 +1,33 @@
+<template>
+    <style>
+        :host {
+            border: 1px solid red;
+            border-radius: 2px;
+            margin: 0 10px;
+        }
+        button {
+            border: 0;
+        }
+    </style>
+    <button></button>
+</template>
+
+<script type='text/javascript'>
+var template = document.currentScript.ownerDocument.querySelector('template');
+class FancyButton extends HTMLElement {
+    constructor() {
+        super();
+        this.createShadowRoot().innerHTML = template.innerHTML;
+    }
+    attributeChangedCallback(attrName, oldValue, newValue) {
+        if (attrName === 'label') {
+            // updating button label
+            this.shadowRoot.querySelector('button').textContent = newValue;
+        }
+    }
+}
+FancyButton.observedAttributes = ['label'];
+
+// registering the new <x-button> tag
+customElements.define('x-button', FancyButton);
+</script>
