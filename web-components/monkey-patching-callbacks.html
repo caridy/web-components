@@ -9,6 +9,9 @@
     class XFoo extends HTMLElement {
         constructor() {
             super();
+            // during the super() call, it extracts
+            // the hooks, and after that, there is
+            // nothing you can do to change them.
         }
         connectedCallback() {
             console.log('original connected');
@@ -20,7 +23,11 @@
 
     // Define the new element
     customElements.define('x-foo', XFoo);
-    
+
+    XFoo.prototype.connectedCallback = function () {
+        console.log('original connected patched after registration does nothing');
+    };
+
     const customFoo = document.createElement('x-foo');
     customFoo.connectedCallback = function () {
         console.log('patched connected');

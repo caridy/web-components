@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Delegate focus on custom elements</title>
+    <script type='text/javascript'>
+    class XProduct extends HTMLElement {
+        constructor() {
+            super();
+            var shadow = this.attachShadow({
+                mode: 'open',
+                delegatesFocus: true,
+            });
+
+            // Create a standard input element and set it's attributes.
+            var input = document.createElement('input');
+            input.value = 'inner input';
+            var slot = document.createElement('slot');
+
+            // Add the input to the shadow root.
+            shadow.appendChild(input);
+            shadow.appendChild(slot);
+        }
+    }
+    customElements.define('x-product', XProduct);
+    </script>
+</head>
+<body>
+
+    <h1>demonstrating delegateFocus feature in a web component</h1>
+
+    <p>Spec: https://www.w3.org/TR/shadow-dom/#focus</p>
+    <p>Original Proposal Explainer: https://github.com/TakayoshiKochi/tabindex-focus-navigation-explainer/blob/master/TabindexFocusNavigationExplainer.md</p>
+    <p>More details: https://developers.google.com/web/fundamentals/web-components/shadowdom#focus</p>
+
+    <input value="before" />
+    <x-product>
+        <button>slotted button</button>
+    </x-product>
+    <input value="after" />
+
+</body>
+</html>
