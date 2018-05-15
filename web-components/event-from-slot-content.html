@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Identity of slots in Web Component</title>
+</head>
+<body>
+    <script>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            shadowRoot.innerHTML = `<slot><h4>fallback</h4></slot>`;
+            this.addEventListener('foo', function (e) {
+                console.log('event observed in the custom element: ', e);
+            });
+            this.shadowRoot.addEventListener('foo', function (e) {
+                console.log('event observed in the shadow root: ', e);
+            });
+            this.shadowRoot.querySelector('slot').addEventListener('foo', function (e) {
+                console.log('event observed in the slot: ', e);
+            });
+        }
+    }
+    customElements.define('x-foo', XFoo);
+    </script>
+    <x-foo>
+        <h3>custom text for default slot</h3>
+    </x-foo>
+    <script>
+    document.querySelector('x-foo').querySelector('h3').dispatchEvent(new CustomEvent('foo', { composed: false, bubbles: true }));
+    document.querySelector('x-foo').shadowRoot.querySelector('h4').dispatchEvent(new CustomEvent('foo', { composed: false, bubbles: true }));
+    </script>
+    
+</body>
+</html>

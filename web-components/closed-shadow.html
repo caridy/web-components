@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Identity of slots in Web Component</title>
+</head>
+<body>
+    <script>
+    class XFoo extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({ mode: 'closed' });
+            shadowRoot.innerHTML = `
+            <x-bar>
+                <x-baz></x-baz>
+            </x-bar>`;
+            this.root = shadowRoot;
+        }
+        run1() {
+            this.root.querySelector('x-bar').run2();
+        }
+    }
+    customElements.define('x-foo', XFoo);
+    class XBar extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({ mode: 'closed' });
+            shadowRoot.innerHTML = ``;
+            this.root = shadowRoot;
+        }
+        run2() {
+            console.log('external p: ', this.querySelector('p'));
+        }
+    }
+    customElements.define('x-bar', XBar);
+    class XBaz extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({ mode: 'closed' });
+            shadowRoot.innerHTML = `<p>provided p</p>`;
+            this.root = shadowRoot;
+        }
+    }
+    customElements.define('x-baz', XBaz);
+    </script>
+    <x-foo></x-foo>
+    <script>
+    document.querySelector('x-foo').run1();
+    </script>
+</body>
+</html>

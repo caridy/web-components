@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Global attributes in custom elements</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XFoo extends HTMLElement {
+        get title() {
+            return this._title;
+        }
+        set title(value) {
+            this._title = value;
+        }
+    }
+    customElements.define('x-foo', XFoo);
+
+    class XBar extends HTMLElement {
+        static get observedAttributes() {
+            return ['title', 'x', 'data-y', 'data-x', 'aria-describedby'];
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            console.log('attr change', name, typeof oldValue, oldValue, typeof newValue, newValue);
+        }
+    }
+    customElements.define('x-bar', XBar);
+
+    const customFoo = document.createElement('x-foo');
+    customFoo.setAttribute('title', 'something');
+    console.log(customFoo.title);
+    customFoo.title = 'else';
+    console.log(customFoo.getAttribute('title'));
+    </script>
+
+    <p>Global attributes in custom elements:</p>
+    <ul>
+        <li>
+            all standard html attributes will preserve the default behavior if no getter or setter is specified.
+        </li>
+        <li>
+            the attribute mutation mechanisms do not invoke getter or setter on the instance level or prototype. you must use the `observedAttributes` and implement your own reflection.
+        </li>
+    </ul>
+    <p>look in the console for more details.</p>
+</body>
+</html>

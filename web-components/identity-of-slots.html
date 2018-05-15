@@ -19,17 +19,23 @@
                 <h2>the x slot default text</h2>
             </slot>`;
             this.root = shadowRoot;
+            this.root.querySelector('slot').addEventListener('slotchange', ({target}) => {
+                // this event is triggered every time that content of an slot changes
+                target.assignedNodes().forEach((e) => {
+                    console.log('slotted: ', e);
+                });
+            });
         }
         run() {
             console.log('internal h1 which is the default content of the default slot: ', this.root.querySelector('h1'));
-            console.log('intenral h2 which is the default content of the slot x', this.root.querySelector('h2'));
+            console.log('internal h2 which is the default content of the slot x', this.root.querySelector('h2'));
         }
     }
     customElements.define('x-foo', XFoo);
     </script>
     <x-foo>
         <h3>custom text for default slot</h3>
-        <h4 sleot="x">
+        <h4 slot="x">
             <p>custom text for slot x</p>
         </h4>
     </x-foo>
@@ -54,6 +60,12 @@
         </li>
         <li>
             weird behavior: if no content for the default slot is provided (in the example above the h3), but some other slot is provided, the default content for the default slot will not surface. but if h4 is removed, everything works fine. default slot seems to be especial.
+        </li>
+        <li>
+            the `slot` elements are present in the shadow tree, and can be inspected.
+        </li>
+        <li>
+            slotted elements can be observed via `slotchange` event in slot elements.
         </li>
     </ul>
 </body>

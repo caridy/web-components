@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Accessibility when using delegate focus on custom elements</title>
+    <script type='text/javascript'>
+    class FancyInput extends HTMLElement {
+        constructor() {
+            super();
+            var shadow = this.attachShadow({
+                mode: 'open',
+                delegatesFocus: true,
+            });
+
+            shadow.innerHTML = `
+                <label id="fancy-label">internal label for input element</label>
+                <input aria-describedby="fancy-label" />
+            `;
+        }
+    }
+    customElements.define('fancy-input', FancyInput);
+
+    class MyComponent extends HTMLElement {
+        constructor() {
+            super();
+            var shadow = this.attachShadow({
+                mode: 'open',
+            });
+
+            shadow.innerHTML = `
+                <label id="my-label">my custom label for fancy-label element</label>
+                <fancy-input aria-describedby="my-label" />
+            `;
+        }
+    }
+    customElements.define('my-component', MyComponent);
+    </script>
+</head>
+<body>
+
+    <h1>demonstrating compounding labels when using delegateFocus feature in a web component</h1>
+
+    <my-component></my-component>
+
+    <label>
+        some basic label
+        <input />
+    </label>
+
+    <label>
+        some outer label
+        <fancy-input></fancy-input>
+    </label>
+
+</body>
+</html>

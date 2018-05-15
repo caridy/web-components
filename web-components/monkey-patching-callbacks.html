@@ -5,16 +5,21 @@
 	<title>Test to validate that the LifeCycle callbacks can't be monkey-patched at the instance level</title>
 </head>
 <body>
-	<script type='text/javascript'>
-    class XFoo extends HTMLElement {
+    <script type='text/javascript'>
+    class Base extends HTMLElement {
+        connectedCallback() {
+            console.log('super connected');
+        }
+        disconnectedCallback() {
+            console.log('super disconnected');
+        }
+    }
+    class XFoo extends Base {
         constructor() {
             super();
             // during the super() call, it extracts
             // the hooks, and after that, there is
             // nothing you can do to change them.
-        }
-        connectedCallback() {
-            console.log('original connected');
         }
         disconnectedCallback() {
             console.log('original disconnected');
@@ -24,6 +29,9 @@
     // Define the new element
     customElements.define('x-foo', XFoo);
 
+    Base.prototype.connectedCallback = function () {
+        console.log('super connected patched after x-foo registration does nothing');
+    };
     XFoo.prototype.connectedCallback = function () {
         console.log('original connected patched after registration does nothing');
     };

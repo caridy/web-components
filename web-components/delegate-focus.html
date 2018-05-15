@@ -20,6 +20,9 @@
             // Add the input to the shadow root.
             shadow.appendChild(input);
             shadow.appendChild(slot);
+
+            this.addEventListener('focus', (e) => console.log(e));
+            this.addEventListener('blur', (e) => console.log(e));
         }
     }
     customElements.define('x-product', XProduct);
