@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Check if :root selector in shadow affects the page</title>
+    <style>
+        :root {
+            color: magenta; 
+        }
+    </style>
+</head>
+<body>
+	<script type='text/javascript'>
+    // Create a class for the element
+    class Foo extends HTMLElement {
+        constructor() {
+            super();
+            var shadow = this.attachShadow({ mode: 'open' });
+            shadow.innerHTML = `
+            <style>
+                :root {
+                    color: green;
+                }
+            </style>
+            <p>internal text in foo should not get the local root color either.</p>
+            `;
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-foo', Foo);
+    </script>
+    <h1>Styling</h1>
+    <p>The following element should have a css rule to change the entire :root color to green:</p>
+    <x-foo></x-foo>
+    <p>Note: you should see this text in magenta because the `:root { color: green }` rule does not get applied to the global because it is declared inside a shadow.</p>
+</body>
+</html>
+
+
