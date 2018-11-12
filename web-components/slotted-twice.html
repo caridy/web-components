@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Slotting elements multiple levels down</title>
+</head>
+<body>
+    <script>
+    class XSlottedSimple extends HTMLElement {
+        constructor() {
+            super();
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            shadowRoot.innerHTML = `<slot></slot>`;
+        }
+    }
+    customElements.define('x-slotted-simple', XSlottedSimple);
+    class XSlottedTwice extends HTMLElement {
+        constructor() {
+            super();
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            shadowRoot.innerHTML = `
+            <x-slotted-simple>
+                <slot></slot>
+            </x-slotted-simple>`;
+        }
+    }
+    customElements.define('x-slotted-twice', XSlottedTwice);
+    </script>
+    <x-slotted-twice>
+        <button></button>
+    </x-slotted-twice>
+    <script>
+      var x = document.querySelector('x-slotted-twice');
+      var currentTargetFromShadowRoot;
+      var targetFromShadowRoot;
+      x.shadowRoot.addEventListener('click', function (e) {
+        currentTargetFromShadowRoot = e.currentTarget;
+        targetFromShadowRoot = e.target;
+      });
+      var slot = x.shadowRoot.querySelector('slot');
+      var currentTargetFromSlot;
+      var targetFromSlot;
+      slot.addEventListener('click', function (e) {
+        currentTargetFromSlot = e.currentTarget;
+        targetFromSlot = e.target;
+      });
+      var b = document.querySelector('button');
+      b.click();
+      console.log(currentTargetFromShadowRoot, x.shadowRoot);
+      console.log(targetFromShadowRoot, b);
+      console.log(currentTargetFromSlot, slot);
+      console.log(targetFromSlot, b);
+    </script>
+    <p>Look at the console output</p>
+</body>
+</html>
