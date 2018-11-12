@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Fancy button demos how to style with slots</title>
+    <style>
+        /*
+        * Global styles
+        **/
+        
+        .btn-group button {
+            background-color: gray; /* Green background */
+            border: 1px solid red; /* Green border */
+            color: white; /* White text */
+            padding: 10px 24px; /* Some padding */
+            cursor: pointer; /* Pointer/hand icon */
+            float: left; /* Float the buttons side by side */
+        }
+        
+        .btn-group button:not(:last-child) {
+            border-right: none; /* Prevent double borders */
+        }
+        
+        /* Clear floats (clearfix hack) */
+        .btn-group:after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* Add a background color on hover */
+        .btn-group button:hover, .btn-group fancy-button:hover {
+            background-color: black;
+        }
+        
+        fancy-button {
+        --border-color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h3>Plain old HTML</h3>
+    <div class="btn-group" role="group">
+      <button>Refresh</button>
+      <button>Edit</button>
+      <button>Save</button>
+    </div>
+    
+    <h3>Web component buttons</h3>
+    <fancy-button label="Refresh"></fancy-button>
+    <fancy-button label="Edit"></fancy-button>
+    <fancy-button label="Save"></fancy-button>
+    
+    <br/>
+    <br/>
+    
+    <h3>Web components fancy-button in a web component button-group</h3>
+    <button-group>
+      <fancy-button label="Refresh"></fancy-button>
+      <fancy-button label="Edit"></fancy-button>
+      <fancy-button label="Save"></fancy-button>
+    </button-group>
+
+    <script type='text/javascript'>
+        class FancyButton extends HTMLElement {
+            constructor() {
+                super();
+                var shadow = this.attachShadow({
+                    mode: 'open',
+                    delegatesFocus: true,
+                });
+                var label = this.getAttribute('label');
+    
+                shadow.innerHTML = `
+                <style>
+                    button {
+                    background-color: gray;
+                    border-right: var(--border-right, solid 1px);
+                    border-color: var(--border-color);
+                    border-top-left-radius: var(--border-radius-top-left, 0px);
+                    border-top-right-radius: var(--border-radius-top-right, 0px);
+                    border-bottom-left-radius: var(--border-radius-bottom-left, 0px);
+                    border-bottom-right-radius: var(--border-radius-bottom-right, 0px);
+                    color: white;
+                    padding: 10px 24px;
+                    cursor: pointer; 
+                    float: left; 
+                    }
+                    :hover {
+                    background-color: black;
+                    }
+                </style>
+                <button>${label}</button>
+                `;
+            }
+        }
+        customElements.define('fancy-button', FancyButton);
+    
+        class ButtonGroup extends HTMLElement {
+            constructor() {
+                super();
+                var template = this.attachShadow({mode: 'open'});
+                
+                template.innerHTML = `
+                    <style>
+                        ::slotted(*:first-child){
+                            --border-radius-top-left: 5px;
+                            --border-radius-bottom-left: 5px;
+                        }
+                        ::slotted(*:not(:last-child)) {
+                            --border-right: none;
+                    
+                        }
+                        ::slotted(*:last-child) {
+                            --border-radius: 5px;
+                            --border-color: red;
+                            --border-radius-top-right: 5px;
+                            --border-radius-bottom-right: 5px;
+                        }
+                    </style>
+                    <slot></slot>
+                    `;
+                }
+            }
+        customElements.define('button-group', ButtonGroup);
+        </script>
+</body>
+</html>
