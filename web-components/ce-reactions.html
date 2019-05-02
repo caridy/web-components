@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Example of LifeCycle for connectedCallback and disconnectedCallback</title>
+</head>
+<body>
+	<script type='text/javascript'>
+    class XGrandChild extends HTMLElement {
+        connectedCallback() {
+            console.log('gchild connected');
+        }
+        disconnectedCallback() {
+            console.log('gchild disconnected');
+        }
+    }
+    class XChild extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = `<x-grand-child></x-grand-child>`;
+        }
+        connectedCallback() {
+            console.log('child connected');
+        }
+        disconnectedCallback() {
+            console.log('child disconnected');
+        }
+    }
+    class XParent extends HTMLElement {
+        constructor() {
+            super();
+            // Attach a shadow root to the element.
+            let shadowRoot = this.attachShadow({mode: 'open'});
+            shadowRoot.innerHTML = `<slot></slot>`;
+        }
+        connectedCallback() {
+            console.log('parent connected');
+        }
+        disconnectedCallback() {
+            console.log('parent disconnected');
+        }
+    }
+
+    // Define the new element
+    customElements.define('x-parent', XParent);
+    customElements.define('x-child', XChild);
+    customElements.define('x-grand-child', XGrandChild);
+    </script>
+    <x-parent>
+        <x-child></x-child>
+    </x-parent>
+    <script>
+    document.querySelector('x-parent').remove();
+    </script>
+</body>
+</html>
